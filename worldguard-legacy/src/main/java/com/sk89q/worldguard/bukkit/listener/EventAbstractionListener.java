@@ -782,44 +782,6 @@ public class EventAbstractionListener extends AbstractListener {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onInventoryMoveItem(InventoryMoveItemEvent event) {
-        final InventoryHolder causeHolder = event.getInitiator().getHolder();
-        InventoryHolder sourceHolder = event.getSource().getHolder();
-        InventoryHolder targetHolder = event.getDestination().getHolder();
-
-        Entry entry;
-
-        if ((entry = moveItemDebounce.tryDebounce(event)) != null) {
-            Cause cause;
-
-            if (causeHolder instanceof Entity) {
-                cause = create(causeHolder);
-            } else if (causeHolder instanceof BlockState) {
-                cause = create(((BlockState) causeHolder).getBlock());
-            } else {
-                cause = Cause.unknown();
-            }
-
-            if (!causeHolder.equals(sourceHolder)) {
-                handleInventoryHolderUse(event, cause, sourceHolder);
-            }
-
-            handleInventoryHolderUse(event, cause, targetHolder);
-
-            if (event.isCancelled() && causeHolder instanceof Hopper) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), new Runnable() {
-                    @Override
-                    public void run() {
-                        ((Hopper) causeHolder).getBlock().breakNaturally();
-                    }
-                });
-            } else {
-                entry.setCancelled(event.isCancelled());
-            }
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
     public void onPotionSplash(PotionSplashEvent event) {
         Entity entity = event.getEntity();
         ThrownPotion potion = event.getPotion();
